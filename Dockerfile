@@ -12,7 +12,7 @@ ARG YARN_CACHE_FOLDER=/var/local/cache/grocy-${GROCY_VERSION}/${TARGETARCH}${TAR
 
 # Collect all source files and cache as layer
 FROM scratch as source
-ADD --link --chmod=755 entrypoint.sh /
+ADD --link --chmod=755 src/entrypoint.sh /
 
 ## php extension installer
 ADD --link --checksum=sha256:f79883e5662846455943d959ba9bc3713e3906247eb9773ae8cd0486ec268014 --chmod=755 https://github.com/mlocati/docker-php-extension-installer/releases/download/2.2.3/install-php-extensions /
@@ -20,13 +20,13 @@ ADD --link --checksum=sha256:f79883e5662846455943d959ba9bc3713e3906247eb9773ae8c
 ## NGINX (the index.xml is used to invalidate the build cache, when a new NGINX revision is released)
 ADD --link --checksum=sha256:ff7cf138acc09f2a5029300ab713fe6a1440605fca72e2bab76a4da9206fec87 --chmod=644 https://nginx.org/keys/nginx_signing.rsa.pub /nginx/
 ADD --link --chmod=644 https://nginx.org/packages/mainline/index.xml /nginx/
-ADD --link --chmod=644 nginx.conf /nginx/
+ADD --link --chmod=644 src/nginx.conf /nginx/
 
 ## Pull Grocy from upstream and create a stub for the config.php
 ARG GROCY_VERSION
 ADD --link --keep-git-dir=true https://github.com/grocy/grocy.git#v${GROCY_VERSION} /grocy
 ADD --link --checksum=sha256:cad4776366fead82f0a477271d184e22931357f0946c5e54995fef742099765f --chmod=644 https://berrnd.de/data/Bernd_Bestel.asc /grocy/
-COPY --link --chmod=644 config.php /grocy/data/
+ADD --link --chmod=644 src/config.php /grocy/data/
 
 # Prepare base image
 FROM ${BASE_IMAGE} as php-fpm
