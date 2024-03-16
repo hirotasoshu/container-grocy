@@ -24,7 +24,7 @@ on:
       grocy_version:
         description: "Grocy major.minor version to build (e.g. 3.9 or 4.1)"
         type: string
-        default: "4.1.0"
+        default: "4.1"
       base_image:
         description: "The base image to build and publish on."
         type: string
@@ -77,6 +77,9 @@ jobs:
             ${{ env.IMAGE_DOCKER }}:latest
         run: |
           echo "TAGS=${{ env.TAGS }} ${{ env.TAGS_LATEST }}" >> $GITHUB_ENV
+      - name: Format TAGS as CSV
+        run: |
+          echo "TAGS=$(echo ${{ env.TAGS }} | tr ' ' ',')" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
