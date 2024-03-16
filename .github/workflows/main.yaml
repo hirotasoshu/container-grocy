@@ -1,0 +1,33 @@
+name: Build and push all supported versions of the container image
+
+on:
+  workflow_dispatch:
+  #“Every day at 05:05 am.”
+  schedule:
+    - cron: "5 5 * * *"
+
+jobs:
+  call-build-push:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: "3.3"
+            base_image: "docker.io/php:8.1-fpm-alpine"
+            tag_latest: false
+            tag_major_minor: true
+          - version: "4.0"
+            base_image: "docker.io/php:8.2-fpm-alpine"
+            tag_latest: false
+            tag_major_minor: true
+          - version: "4.1"
+            base_image: "docker.io/php:8.3-fpm-alpine"
+            tag_latest: true
+            tag_major_minor: true
+    uses: ./.github/workflows/build-push.yaml
+    secrets: inherit
+    with:
+      grocy_version: ${{ matrix.version }}
+      base_image: ${{ matrix.base_image }}
+      tag_latest: ${{ matrix.tag_latest }}
+      tag_major_minor: ${{ matrix.tag_major_minor }}

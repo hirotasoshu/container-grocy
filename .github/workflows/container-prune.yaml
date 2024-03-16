@@ -1,0 +1,26 @@
+name: Prune untagged container images
+
+on:
+  workflow_run:
+    workflows:
+      [
+        "Build and push all supported versions of the container image",
+      ]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  prune-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete all untagged images older than a month
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: grocy
+          cut-off: 1 month ago UTC
+          keep-at-least: 0
+          untagged-only: true
+          account-type: personal
+          token: ${{ secrets.DELETE_PACKAGES_TOKEN }}
+          timestamp-to-use: updated_at
