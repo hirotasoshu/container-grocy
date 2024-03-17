@@ -2,6 +2,7 @@
 set -eu
 
 version_file="${GROCY_DATAPATH}/.container-grocy-version"
+db_file="${GROCY_DATAPATH}/grocy.db"
 
 # Initialize the data volume but do not overwrite existing files
 cp -anv -t "${GROCY_DATAPATH}" /var/www/data/*
@@ -10,7 +11,7 @@ cp -anv -t "${GROCY_DATAPATH}" /var/www/data/*
 [ -d "${viewcache_path:=${GROCY_DATAPATH}/viewcache}" ] && find "${viewcache_path}" -mindepth 1 -delete
 
 # Perform a DB backup if the Grocy version is upgraded.
-if [ -f "${version_file}" ]; then
+if [ -f "${version_file}" ] && [ -f "${db_file}" ]; then
 	old_grocy_version=$(cat "${version_file}")
 	case $(apk version -t "${GROCY_VERSION}" "${old_grocy_version}") in
 	"<")
@@ -21,7 +22,7 @@ if [ -f "${version_file}" ]; then
 		mkdir -p "${backup_path:=${GROCY_DATAPATH}/backups}"
 		php <<-EOT
 			<?php
-			\$db = new SQLite3('${GROCY_DATAPATH}/grocy.db', SQLITE3_OPEN_READONLY);
+			\$db = new SQLite3('${db_file}', SQLITE3_OPEN_READONLY);
 			\$db->enableExceptions(true);
 			\$db->exec( "VACUUM INTO '${backup_path}/grocy-${old_grocy_version}_pre-${GROCY_VERSION}.db';" );
 			\$db->close();
