@@ -4,7 +4,7 @@
 .PHONY := registry-push registry-run podman-run clean clean-data
 .DEFAULT_GOAL := podman-run
 
-GROCY_VERSION	?= 4.1.0
+GROCY_VERSION	?= 4.2.0
 BASE_IMAGE		?= docker.io/php:8.3-fpm-alpine
 
 #GROCY_VERSION	?= $(shell gh api repos/grocy/grocy/releases --jq 'map(select(.draft==false and .prerelease==false and (.tag_name | startswith("v"))).tag_name[1:])|max')
@@ -24,7 +24,7 @@ $(DATADIR) $(BUILDDIR):
 	mkdir -p $@
 
 $(BUILDDIR)/metadata-$(GROCY_VERSION).json: Dockerfile src/* |$(BUILDDIR)
-	buildctl build --frontend gateway.v0 --opt source=docker.io/docker/dockerfile:1 --local context=src --local dockerfile=. \
+	buildctl build --frontend gateway.v0 --opt source=docker.io/docker/dockerfile:1 --local context=. --local dockerfile=. \
 	--output type=image,name=$(NAME)$(SUFFIX),push=$(PUSH) \
 	--opt build-arg:GROCY_VERSION=$(GROCY_VERSION) \
 	--opt build-arg:BASE_IMAGE=$(BASE_IMAGE) \
@@ -35,7 +35,7 @@ $(BUILDDIR)/metadata-$(GROCY_VERSION).json: Dockerfile src/* |$(BUILDDIR)
 	$(OPTS)
 
 $(BUILDDIR)/oci-$(GROCY_VERSION).tar: Dockerfile src/* |$(BUILDDIR)
-	buildctl build --frontend gateway.v0 --opt source=docker.io/docker/dockerfile:1 --local context=src --local dockerfile=. \
+	buildctl build --frontend gateway.v0 --opt source=docker.io/docker/dockerfile:1 --local context=. --local dockerfile=. \
 	--output type=oci,dest=$@,name=$(NAME)$(SUFFIX) \
 	--opt build-arg:GROCY_VERSION=$(GROCY_VERSION) \
 	--opt build-arg:BASE_IMAGE=$(BASE_IMAGE) \

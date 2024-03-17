@@ -17,11 +17,12 @@ Please subscribe and watch the [Grocy releases](https://github.com/grocy/grocy/r
 
 The `:latest` tag follows the current version.
 
-| Tag                       | Base image                                                                                                                            | Comment             |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| ghcr.io/bbx0/grocy:4.1    | [php:8.3-fpm-alpine](https://github.com/docker-library/docs/blob/master/php/README.md#supported-tags-and-respective-dockerfile-links) | **current**       |
-| ghcr.io/bbx0/grocy:4.0    | php:8.2-fpm-alpine                                                                                                                    | EOL, please upgrade |
-| ghcr.io/bbx0/grocy:3.3    | php:8.1-fpm-alpine                                                                                                                    | EOL, please upgrade |
+| Tag                    | Base image                                                                                                                            | Comment             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| ghcr.io/bbx0/grocy:4.2 | [php:8.3-fpm-alpine](https://github.com/docker-library/docs/blob/master/php/README.md#supported-tags-and-respective-dockerfile-links) | **current**         |
+| ghcr.io/bbx0/grocy:4.1 | php:8.3-fpm-alpine                                                                                                                    | EOL, please upgrade |
+| ghcr.io/bbx0/grocy:4.0 | php:8.2-fpm-alpine                                                                                                                    | EOL, please upgrade |
+| ghcr.io/bbx0/grocy:3.3 | php:8.1-fpm-alpine                                                                                                                    | EOL, please upgrade |
 
 The `EOL` tags are built on best-effort basis and will eventually be removed after a while.
 
