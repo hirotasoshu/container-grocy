@@ -108,5 +108,6 @@ jobs:
           build-args: |
             GROCY_VERSION=${{ env.GROCY_VERSION }}
             BASE_IMAGE=${{ inputs.base_image }}
-          provenance: true
-          sbom: true
+          # Attestation metadata causes a new image digest on each run
+          provenance: false
+          sbom: false
