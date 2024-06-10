@@ -13,19 +13,19 @@ jobs:
       matrix:
         include:
           - version: "3.3"
-            base_image: "docker.io/php:8.1-fpm-alpine3.19"
+            base_image: "docker.io/php:8.1-fpm-alpine"
             tag_latest: false
             tag_major_minor: true
           - version: "4.0"
-            base_image: "docker.io/php:8.2-fpm-alpine3.19"
+            base_image: "docker.io/php:8.2-fpm-alpine"
             tag_latest: false
             tag_major_minor: true
           - version: "4.1"
-            base_image: "docker.io/php:8.3-fpm-alpine3.19"
+            base_image: "docker.io/php:8.3-fpm-alpine"
             tag_latest: false
             tag_major_minor: true
           - version: "4.2"
-            base_image: "docker.io/php:8.3-fpm-alpine3.19"
+            base_image: "docker.io/php:8.3-fpm-alpine"
             tag_latest: true
             tag_major_minor: true
     uses: ./.github/workflows/build-push.yaml
