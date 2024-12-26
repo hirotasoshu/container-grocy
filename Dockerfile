@@ -1,7 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 
 # Supported grocy and php version
-ARG GROCY_VERSION=4.2.0
+ARG GROCY_VERSION=4.3.0
 ARG BASE_IMAGE=docker.io/php:8.3-fpm-alpine
 
 # Build environment and defaults
@@ -31,7 +31,7 @@ ADD --link --chmod=644 src/config.php /grocy/data/
 # Prepare base image
 FROM ${BASE_IMAGE} as php-fpm
 RUN --mount=type=bind,from=source,source=/install-php-extensions,target=/usr/local/bin/install-php-extensions \
-sh -eux -o pipefail <<-'EOT'
+	sh -eux -o pipefail <<-'EOT'
 	# Use default settings for php in production
 	mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
@@ -54,16 +54,16 @@ EOT
 # Build Grocy under /rootfs/var/www
 FROM php-fpm as builder
 RUN --mount=type=bind,from=source,source=/install-php-extensions,target=/usr/local/bin/install-php-extensions \
-		install-php-extensions @composer
+	install-php-extensions @composer
 RUN apk add --no-cache git gnupg yarn
 ARG GROCY_VERSION
 ARG COMPOSER_ALLOW_SUPERUSER COMPOSER_HOME YARN_CACHE_FOLDER
 WORKDIR /rootfs/var/www
 RUN --mount=type=bind,from=source,source=/grocy,target=/grocy \
-		--mount=type=cache,target=${COMPOSER_HOME}/cache \
-		--mount=type=cache,target=${YARN_CACHE_FOLDER} \
-		--mount=type=tmpfs,target=/tmp \
-sh -eux -o pipefail <<-EOT
+	--mount=type=cache,target=${COMPOSER_HOME}/cache \
+	--mount=type=cache,target=${YARN_CACHE_FOLDER} \
+	--mount=type=tmpfs,target=/tmp \
+	sh -eux -o pipefail <<-EOT
 	gpg --batch --import /grocy/Bernd_Bestel.asc
 	git -C /grocy verify-commit v${GROCY_VERSION}
 	git -C /grocy archive --prefix=data/ --add-file=data/config.php --prefix= v${GROCY_VERSION} | tar xf -
@@ -86,8 +86,8 @@ COPY --link --from=source /entrypoint.sh /rootfs/entrypoint.sh
 # Use NGINX as webserver and multirun to run PHP-FPM and NGINX in combination
 FROM php-fpm as webserver
 RUN --mount=type=bind,from=source,source=/nginx,target=/nginx \
-		--mount=type=tmpfs,target=/tmp \
-sh -eux -o pipefail <<-EOT
+	--mount=type=tmpfs,target=/tmp \
+	sh -eux -o pipefail <<-EOT
 	echo "@nginx-repo https://nginx.org/packages/mainline/alpine/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)/main" >> /etc/apk/repositories
 	cp -a /nginx/nginx_signing.rsa.pub /etc/apk/keys/nginx_signing.rsa.pub
 	apk add --no-cache nginx@nginx-repo multirun
@@ -112,11 +112,11 @@ COPY --link --from=builder /rootfs/ /
 VOLUME ${GROCY_DATAPATH}
 
 LABEL\
-  org.opencontainers.image.title="Grocy" \
-  org.opencontainers.image.description="Grocy is a self-hosted groceries & household management solution." \
-  org.opencontainers.image.licenses="MIT" \
-  org.opencontainers.image.vendor="Grocy Community (unofficial)" \
-  org.opencontainers.image.version=${GROCY_VERSION} \
-  org.opencontainers.image.source="https://github.com/bbx0/container-grocy" \
-  org.opencontainers.image.authors="39773919+bbx0@users.noreply.github.com" \
-  org.opencontainers.image.base.name=${BASE_IMAGE}
+	org.opencontainers.image.title="Grocy" \
+	org.opencontainers.image.description="Grocy is a self-hosted groceries & household management solution." \
+	org.opencontainers.image.licenses="MIT" \
+	org.opencontainers.image.vendor="Grocy Community (unofficial)" \
+	org.opencontainers.image.version=${GROCY_VERSION} \
+	org.opencontainers.image.source="https://github.com/bbx0/container-grocy" \
+	org.opencontainers.image.authors="39773919+bbx0@users.noreply.github.com" \
+	org.opencontainers.image.base.name=${BASE_IMAGE}
