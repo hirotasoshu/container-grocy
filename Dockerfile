@@ -15,7 +15,7 @@ FROM scratch as source
 ADD --link --chmod=755 src/entrypoint.sh /
 
 ## php extension installer
-ADD --link --checksum=sha256:f79883e5662846455943d959ba9bc3713e3906247eb9773ae8cd0486ec268014 --chmod=755 https://github.com/mlocati/docker-php-extension-installer/releases/download/2.2.3/install-php-extensions /
+ADD --link --checksum=sha256:cd34b5a258847d08b889f9a3a6ac01830fc2f15ff62d8bf2151644d1ef66d727 --chmod=755 https://github.com/mlocati/docker-php-extension-installer/releases/download/2.7.12/install-php-extensions /
 
 ## NGINX (the index.xml is used to invalidate the build cache, when a new NGINX revision is released)
 ADD --link --checksum=sha256:ff7cf138acc09f2a5029300ab713fe6a1440605fca72e2bab76a4da9206fec87 --chmod=644 https://nginx.org/keys/nginx_signing.rsa.pub /nginx/
