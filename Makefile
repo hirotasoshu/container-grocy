@@ -48,6 +48,9 @@ registry-run: $(BUILDDIR)/metadata-$(GROCY_VERSION).json |$(DATADIR)
 podman-run: $(BUILDDIR)/oci-$(GROCY_VERSION).tar |$(DATADIR)
 	podman run --name=grocy --rm --replace --publish=127.0.0.1:8080:8080 --read-only --volume=$(DATADIR):/data -e GROCY_CURRENCY=EUR -ti oci-archive:$<
 
+podman-run-demo: $(BUILDDIR)/oci-$(GROCY_VERSION).tar
+	podman run --name=grocy-demo --rm --replace --publish=127.0.0.1:8080:8080 --read-only -e GROCY_MODE=demo -e GROCY_CURRENCY=EUR -ti oci-archive:$<
+
 clean:
 	rm -rf $(BUILDDIR)
 
