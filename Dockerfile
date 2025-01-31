@@ -1,7 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 
 # Supported grocy and php version
-ARG GROCY_VERSION=4.3.0
+ARG GROCY_VERSION=4.4.0
 ARG BASE_IMAGE=docker.io/php:8.3-fpm-alpine
 
 # Build environment and defaults
