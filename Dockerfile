@@ -1,4 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1
+# check=error=true
 
 # Supported grocy and php version
 ARG GROCY_VERSION=4.4.0
@@ -11,7 +12,7 @@ ARG COMPOSER_HOME=/var/local/cache/grocy-${GROCY_VERSION}/${TARGETARCH}${TARGETV
 ARG YARN_CACHE_FOLDER=/var/local/cache/grocy-${GROCY_VERSION}/${TARGETARCH}${TARGETVARIANT}/yarn
 
 # Collect all source files and cache as layer
-FROM scratch as source
+FROM scratch AS source
 ADD --link --chmod=755 src/entrypoint.sh /
 
 ## php extension installer
@@ -29,7 +30,7 @@ ADD --link --checksum=sha256:cad4776366fead82f0a477271d184e22931357f0946c5e54995
 ADD --link --chmod=644 src/config.php /grocy/data/
 
 # Prepare base image
-FROM ${BASE_IMAGE} as php-fpm
+FROM ${BASE_IMAGE} AS php-fpm
 RUN --mount=type=bind,from=source,source=/install-php-extensions,target=/usr/local/bin/install-php-extensions \
 	sh -eux -o pipefail <<-'EOT'
 	# Use default settings for php in production
@@ -52,7 +53,7 @@ RUN --mount=type=bind,from=source,source=/install-php-extensions,target=/usr/loc
 EOT
 
 # Build Grocy under /rootfs/var/www
-FROM php-fpm as builder
+FROM php-fpm AS builder
 RUN --mount=type=bind,from=source,source=/install-php-extensions,target=/usr/local/bin/install-php-extensions \
 	install-php-extensions @composer
 RUN apk add --no-cache git gnupg yarn
@@ -84,7 +85,7 @@ EOT
 COPY --link --from=source /entrypoint.sh /rootfs/entrypoint.sh
 
 # Use NGINX as webserver and multirun to run PHP-FPM and NGINX in combination
-FROM php-fpm as webserver
+FROM php-fpm AS webserver
 RUN --mount=type=bind,from=source,source=/nginx,target=/nginx \
 	--mount=type=tmpfs,target=/tmp \
 	sh -eux -o pipefail <<-EOT
@@ -105,7 +106,7 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "multirun", "php-fpm","nginx -e stderr -c /etc/nginx/nginx.conf" ]
 
 # Setup the runtime
-FROM webserver as runtime
+FROM webserver AS runtime
 ARG BASE_IMAGE GROCY_VERSION GROCY_DATAPATH
 ENV GROCY_VERSION=${GROCY_VERSION} GROCY_DATAPATH=${GROCY_DATAPATH}
 COPY --link --from=builder /rootfs/ /
