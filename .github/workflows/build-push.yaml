@@ -43,7 +43,6 @@ jobs:
     name: Build and push the Grocy container image to the GHCR and Docker Hub
     env:
       IMAGE_GHCR: ghcr.io/${{ github.repository_owner }}/grocy
-      IMAGE_DOCKER: docker.io/${{ github.repository_owner }}/grocy
       GROCY_VERSION:
       TAGS:
     runs-on: ubuntu-latest
@@ -58,7 +57,6 @@ jobs:
         env:
           TAGS: >-
             ${{ env.IMAGE_GHCR }}:${{ env.GROCY_VERSION }}
-            ${{ env.IMAGE_DOCKER }}:${{ env.GROCY_VERSION }}
         run: |
           echo "TAGS=${{ env.TAGS }}" >> $GITHUB_ENV
       - name: Add :{major}.{minor} tags
@@ -66,7 +64,6 @@ jobs:
         env:
           TAGS_MAJOR_MINOR: >-
             ${{ env.IMAGE_GHCR }}:${{ inputs.GROCY_VERSION }}
-            ${{ env.IMAGE_DOCKER }}:${{ inputs.GROCY_VERSION }}
         run: |
           echo "TAGS=${{ env.TAGS }} ${{ env.TAGS_MAJOR_MINOR }}" >> $GITHUB_ENV
       - name: Add :latest tag
@@ -74,7 +71,6 @@ jobs:
         env:
           TAGS_LATEST: >-
             ${{ env.IMAGE_GHCR }}:latest
-            ${{ env.IMAGE_DOCKER }}:latest
         run: |
           echo "TAGS=${{ env.TAGS }} ${{ env.TAGS_LATEST }}" >> $GITHUB_ENV
       - name: Format TAGS as CSV
@@ -90,12 +86,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: docker.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
